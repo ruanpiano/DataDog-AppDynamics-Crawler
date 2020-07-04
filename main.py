@@ -45,7 +45,7 @@ def post_applications(applications):
     for application in applications():
         if (application['name'] != ''):
             dataset, tags = get_application_average_response_time(application)
-            print (dataset)
+            if (DEBUG): print (dataset)
             if not (len(dataset) > 0):
                 continue
             if (dataset[0]['metricName'] != 'METRIC DATA NOT FOUND'):
