@@ -43,7 +43,7 @@ def get_application_average_response_time(application):
 
 def post_applications(applications):
     for application in applications():
-        if (application['name'] != 'Streama'):
+        if (application['name'] != ''):
             dataset, tags = get_application_average_response_time(application)
             print (dataset)
             if not (len(dataset) > 0):
@@ -54,7 +54,6 @@ def post_applications(applications):
                     if result in {'value', 'min', 'max', 'sum', 'count', 'standardDeviation'}:
                         response = api.Metric.send(metric="appdynamics."+metric+"."+result, points=dataset[0]['metricValues'][0][result], tags=tags)
                         if (DEBUG): print (response)
-    
     
 def main(): 
     post_applications(get_applications)
