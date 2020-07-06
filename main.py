@@ -80,7 +80,7 @@ def post_datadog(dataset, tags):
 
 def post_applications(applications):
     for application in applications():
-        if (application['name'] == 'Streama'):
+        if (application['name'] != ''):
             # Get Application Average Response Time
             dataset, tags = get_application_average_response_time(application)
             #if (DEBUG): print (dataset)
