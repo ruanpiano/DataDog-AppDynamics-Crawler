@@ -70,6 +70,7 @@ def post_datadog(dataset, tags):
         metric = stringcase.snakecase(dataset[0]['metricPath'].replace("|","")).replace("__","_")
         for tag in tags:
             metric = metric.replace(tag.split(":")[1].lower(),"")
+            metric = metric.replace(stringcase.snakecase(tag.split(":")[1]),"")
         metric = metric.replace("__","_")
         for result in dataset[0]['metricValues'][0]:
             if result in {'value', 'min', 'max', 'sum', 'count', 'standardDeviation'}:
