@@ -90,8 +90,12 @@ def post_applications(applications):
             
             # Get Average Response Tiem for each Business Transaction
             dataset = get_business_transactions(application)
+            if not (len(dataset) > 0):
+                continue
             for bt in dataset:
                 sub_dataset, tags = get_bt_average_response_time(application,bt)
+                if not (len(sub_dataset) > 0):
+                    continue
                 post_datadog(sub_dataset, tags)
                 
     
