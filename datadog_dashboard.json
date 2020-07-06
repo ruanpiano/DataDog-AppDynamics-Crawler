@@ -1,1 +1,168 @@
-{"title":"AppDynamics Overview","description":"# AppDynamics Integration\n\nBased on https://github.com/ruanpiano/DataDog-AppDynamics-Crawler","widgets":[{"id":8955386869392482,"definition":{"type":"timeseries","requests":[{"q":"avg:appdynamics.overall_application_performance_average_response_time_ms.value{$application.name,$controller} by {application.name}","display_type":"line","style":{"palette":"dog_classic","line_type":"solid","line_width":"normal"}}],"custom_links":[],"yaxis":{"label":"","scale":"linear","min":"auto","max":"auto","include_zero":true},"title":"Average Response Time by Application","title_size":"16","title_align":"left","show_legend":false},"layout":{"x":0,"y":18,"width":72,"height":19}},{"id":7959816114603994,"definition":{"type":"query_table","requests":[{"q":"avg:appdynamics.overall_application_performance_average_response_time_ms.value{$application.name,$controller} by {application.name}","aggregator":"avg","limit":50,"order":"desc","alias":"Avg Response Time","conditional_formats":[{"comparator":"<=","value":1000,"palette":"white_on_green"},{"comparator":">","value":1000,"palette":"white_on_yellow"},{"comparator":">=","value":3000,"palette":"white_on_red"}]},{"q":"avg:appdynamics.overall_application_performance_average_response_time_ms.count{$application.name,$controller} by {application.name}","aggregator":"max","alias":"Avg Load","conditional_formats":[{"comparator":">","value":500,"palette":"white_on_yellow"},{"comparator":">","value":1000,"palette":"white_on_red"},{"comparator":">","value":0,"palette":"white_on_green"}]}],"custom_links":[],"title":"Applications Overview","title_size":"16","title_align":"left"},"layout":{"x":0,"y":0,"width":144,"height":17}},{"id":7647519374380484,"definition":{"type":"timeseries","requests":[{"q":"avg:appdynamics.overall_application_performance_average_response_time_ms.count{$application.name,$controller} by {application.name}","display_type":"line","style":{"palette":"dog_classic","line_type":"solid","line_width":"normal"}}],"custom_links":[],"yaxis":{"label":"","scale":"linear","min":"auto","max":"auto","include_zero":true},"markers":[{"value":"y = 500","display_type":"warning dashed","label":" Warning Load "},{"value":"y = 1000","display_type":"error dashed","label":" Critical Load "}],"title":"Average Load by Application","title_size":"16","title_align":"left","show_legend":false},"layout":{"x":73,"y":18,"width":71,"height":19}}],"template_variables":[{"name":"application.name","default":"*","prefix":"application.name"},{"name":"controller","default":"*","prefix":"controller"}],"layout_type":"free","is_read_only":false,"notify_list":[],"id":"zh9-rz5-8ki"}
+{
+    "title": "AppDynamics Overview",
+    "description": "# AppDynamics Integration\n\nBased on https://github.com/ruanpiano/DataDog-AppDynamics-Crawler",
+    "widgets": [
+      {
+        "id": 8955386869392482,
+        "definition": {
+          "type": "timeseries",
+          "requests": [
+            {
+              "q": "avg:appdynamics.overall_application_performance_average_response_time_ms.value{$application.name,$controller} by {application.name}",
+              "display_type": "line",
+              "style": {
+                "palette": "dog_classic",
+                "line_type": "solid",
+                "line_width": "normal"
+              }
+            }
+          ],
+          "custom_links": [],
+          "yaxis": {
+            "label": "",
+            "scale": "linear",
+            "min": "auto",
+            "max": "auto",
+            "include_zero": true
+          },
+          "title": "Average Response Time by Application",
+          "title_size": "16",
+          "title_align": "left",
+          "show_legend": false
+        },
+        "layout": {
+          "x": 0,
+          "y": 18,
+          "width": 72,
+          "height": 19
+        }
+      },
+      {
+        "id": 7959816114603994,
+        "definition": {
+          "type": "query_table",
+          "requests": [
+            {
+              "q": "avg:appdynamics.overall_application_performance_average_response_time_ms.value{$application.name,$controller} by {application.name}",
+              "aggregator": "avg",
+              "limit": 50,
+              "order": "desc",
+              "alias": "Avg Response Time",
+              "conditional_formats": [
+                {
+                  "comparator": "<=",
+                  "value": 1000,
+                  "palette": "white_on_green"
+                },
+                {
+                  "comparator": ">",
+                  "value": 1000,
+                  "palette": "white_on_yellow"
+                },
+                {
+                  "comparator": ">=",
+                  "value": 3000,
+                  "palette": "white_on_red"
+                }
+              ]
+            },
+            {
+              "q": "avg:appdynamics.overall_application_performance_average_response_time_ms.count{$application.name,$controller} by {application.name}",
+              "aggregator": "max",
+              "alias": "Avg Load",
+              "conditional_formats": [
+                {
+                  "comparator": ">",
+                  "value": 500,
+                  "palette": "white_on_yellow"
+                },
+                {
+                  "comparator": ">",
+                  "value": 1000,
+                  "palette": "white_on_red"
+                },
+                {
+                  "comparator": ">",
+                  "value": 0,
+                  "palette": "white_on_green"
+                }
+              ]
+            }
+          ],
+          "custom_links": [],
+          "title": "Applications Overview",
+          "title_size": "16",
+          "title_align": "left"
+        },
+        "layout": {
+          "x": 0,
+          "y": 0,
+          "width": 144,
+          "height": 17
+        }
+      },
+      {
+        "id": 7647519374380484,
+        "definition": {
+          "type": "timeseries",
+          "requests": [
+            {
+              "q": "avg:appdynamics.overall_application_performance_average_response_time_ms.count{$application.name,$controller} by {application.name}",
+              "display_type": "line",
+              "style": {
+                "palette": "dog_classic",
+                "line_type": "solid",
+                "line_width": "normal"
+              }
+            }
+          ],
+          "custom_links": [],
+          "yaxis": {
+            "label": "",
+            "scale": "linear",
+            "min": "auto",
+            "max": "auto",
+            "include_zero": true
+          },
+          "markers": [
+            {
+              "value": "y = 500",
+              "display_type": "warning dashed",
+              "label": " Warning Load "
+            },
+            {
+              "value": "y = 1000",
+              "display_type": "error dashed",
+              "label": " Critical Load "
+            }
+          ],
+          "title": "Average Load by Application",
+          "title_size": "16",
+          "title_align": "left",
+          "show_legend": false
+        },
+        "layout": {
+          "x": 73,
+          "y": 18,
+          "width": 71,
+          "height": 19
+        }
+      }
+    ],
+    "template_variables": [
+      {
+        "name": "application.name",
+        "default": "*",
+        "prefix": "application.name"
+      },
+      {
+        "name": "controller",
+        "default": "*",
+        "prefix": "controller"
+      }
+    ],
+    "layout_type": "free",
+    "is_read_only": false,
+    "notify_list": [],
+    "id": "zh9-rz5-8ki"
+  }
