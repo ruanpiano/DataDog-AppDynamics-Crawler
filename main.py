@@ -23,7 +23,6 @@ APPD_USER = os.getenv('APPD_USER')
 APPD_PASS = os.getenv('APPD_PASS')
 DEBUG = os.getenv('DEBUG')
 
-
 def get_applications():
     r = requests.get(url = APPD_PROTOCOL+APPD_CONTROLLER+'/controller/rest/applications'+APPD_FORMAT,
                      auth=HTTPBasicAuth(APPD_USER, APPD_PASS))
@@ -39,6 +38,7 @@ def get_application_average_response_time(application):
     tags = []
     tags.append("application.name:"+str(application["name"]))
     tags.append("application.id:"+str(application["id"]))
+    tags.append("controller:"+str(APPD_CONTROLLER))
     return dataset, tags
 
 def post_applications(applications):
