@@ -29,6 +29,12 @@ def get_applications():
     dataset = r.json()
     return dataset
 
+def get_business_transactions(application):
+    r = requests.get(url = APPD_PROTOCOL+APPD_CONTROLLER+'/controller/rest/applications/'+str(application['id'])+'/business-transactions/'+APPD_FORMAT,
+                     auth=HTTPBasicAuth(APPD_USER, APPD_PASS))
+    dataset = r.json()
+    return dataset
+
 def get_application_average_response_time(application):
     metric = "metric-data?metric-path=Overall%20Application%20Performance%7CAverage%20Response%20Time%20%28ms%29&time-range-type=BEFORE_NOW&duration-in-mins=1"
     # ECommerce_E2E/metric-data?metric-path=Overall%20Application%20Performance%7CAverage%20Response%20Time%20%28ms%29&time-range-type=BEFORE_NOW&duration-in-mins=15
@@ -41,19 +47,52 @@ def get_application_average_response_time(application):
     tags.append("controller:"+str(APPD_CONTROLLER))
     return dataset, tags
 
+def get_bt_average_response_time(application, bt):
+    metric = "metric-data?metric-path=Business%20Transaction%20Performance%7CBusiness%20Transactions%7C"+str(bt['tierName'])+"%7C"+str(bt['name'])+"%7CAverage%20Response%20Time%20%28ms%29&time-range-type=BEFORE_NOW&duration-in-mins=1"
+    # /controller/rest/applications/Streama/metric-data?metric-path=Business%20Transaction%20Performance%7CBusiness%20Transactions%7CJava%7C%2Fdash%2FlistGenres.json%7CAverage%20Response%20Time%20%28ms%29&time-range-type=BEFORE_NOW&duration-in-mins=60
+    r = requests.get(url = APPD_PROTOCOL+APPD_CONTROLLER+'/controller/rest/applications/'+str(application['id'])+'/'+metric+APPD_FORMAT.replace('?', '&'),
+                     auth=HTTPBasicAuth(APPD_USER, APPD_PASS))
+    dataset = r.json()
+    tags = []
+    tags.append("application.name:"+str(application["name"]))
+    tags.append("application.id:"+str(application["id"]))
+    tags.append("tier.name:"+str(bt['tierName']))
+    tags.append("tier.id:"+str(bt['tierId']))
+    tags.append("business_transaction.name:"+str(bt['name']))
+    tags.append("business_transaction.internal_name:"+str(bt['internalName']))
+    tags.append("business_transaction.id:"+str(bt['id']))
+    tags.append("entry_point_type:"+str(bt['entryPointTypeString']))
+    tags.append("controller:"+str(APPD_CONTROLLER))
+    return dataset, tags
+
+def post_datadog(dataset, tags):
+    if (dataset[0]['metricName'] != 'METRIC DATA NOT FOUND'):
+        metric = stringcase.snakecase(dataset[0]['metricPath'].replace("|","")).replace("__","_")
+        for tag in tags:
+            metric = metric.replace(tag.split(":")[1].lower(),"")
+        metric = metric.replace("__","_")
+        for result in dataset[0]['metricValues'][0]:
+            if result in {'value', 'min', 'max', 'sum', 'count', 'standardDeviation'}:
+                response = api.Metric.send(metric="appdynamics."+metric+"."+result, points=dataset[0]['metricValues'][0][result], tags=tags)
+                if (DEBUG): print (response)
+    return 0
+
 def post_applications(applications):
     for application in applications():
-        if (application['name'] != ''):
+        if (application['name'] == 'Streama'):
+            # Get Application Average Response Time
             dataset, tags = get_application_average_response_time(application)
-            if (DEBUG): print (dataset)
+            #if (DEBUG): print (dataset)
             if not (len(dataset) > 0):
                 continue
-            if (dataset[0]['metricName'] != 'METRIC DATA NOT FOUND'):
-                metric = stringcase.snakecase(dataset[0]['metricPath'].replace("|","")).replace("__","_")
-                for result in dataset[0]['metricValues'][0]:
-                    if result in {'value', 'min', 'max', 'sum', 'count', 'standardDeviation'}:
-                        response = api.Metric.send(metric="appdynamics."+metric+"."+result, points=dataset[0]['metricValues'][0][result], tags=tags)
-                        if (DEBUG): print (response)
+            post_datadog(dataset, tags)
+            
+            # Get Average Response Tiem for each Business Transaction
+            dataset = get_business_transactions(application)
+            for bt in dataset:
+                sub_dataset, tags = get_bt_average_response_time(application,bt)
+                post_datadog(sub_dataset, tags)
+                
     
 def main(): 
     post_applications(get_applications)
