@@ -12,3 +12,5 @@ You need to set the following environment variables as the example above:
     APPD_FORMAT = "?output=JSON"
     APPD_USER = "ruanpiano@customer1"
     APPD_PASS = "ruanpiano"
+
+docker build . -t datadog-appdynamics-crawler

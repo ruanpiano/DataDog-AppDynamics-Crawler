@@ -99,9 +99,24 @@ def post_applications(applications):
                 if (bt['internalName'] == '_APPDYNAMICS_DEFAULT_TX_'):
                     continue
                 post_datadog(sub_dataset, tags, metric_name)
-                
+
+
+def check_variables():
+    required_vars = ['DD_API_KEY', 'DD_APP_KEY', 'APPD_PROTOCOL',
+                     'APPD_CONTROLLER', 'APPD_FORMAT', 'APPD_USER',
+                     'APPD_PASS', 'DEBUG']
+    missing_vars = []
+    for var in required_vars:
+        if (os.getenv(var) == None) or (os.getenv(var) == ''):
+            missing_vars.append(var)
+    if len(missing_vars) > 0:
+        print("You need to set the follorwing environment variables:")
+        for var in missing_vars:
+            print (var)
+        exit()
     
 def main(): 
+    check_variables()
     post_applications(get_applications)
             
 main()
