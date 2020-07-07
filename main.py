@@ -80,7 +80,7 @@ def post_datadog(dataset, tags, metric_name):
 
 def post_applications(applications):
     for application in applications():
-        if (application['name'] == 'ECommerce'):
+        if (application['name'] != '') or (not DEBUG):
             # Get Application Average Response Time
             dataset, tags, metric_name = get_application_average_response_time(application)
             #if (DEBUG): print (dataset)
