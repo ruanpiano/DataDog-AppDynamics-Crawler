@@ -45,7 +45,7 @@ def get_application_average_response_time(application):
     tags.append("application.name:"+str(application["name"]))
     tags.append("application.id:"+str(application["id"]))
     tags.append("controller:"+str(APPD_CONTROLLER))
-    return dataset, tags
+    return dataset, tags, "appdynamics.application_average_response_time"
 
 def get_bt_average_response_time(application, bt):
     metric = "metric-data?metric-path=Business%20Transaction%20Performance%7CBusiness%20Transactions%7C"+str(bt['tierName'])+"%7C"+str(bt['name'])+"%7CAverage%20Response%20Time%20%28ms%29&time-range-type=BEFORE_NOW&duration-in-mins=1"
@@ -63,9 +63,9 @@ def get_bt_average_response_time(application, bt):
     tags.append("business_transaction.id:"+str(bt['id']))
     tags.append("entry_point_type:"+str(bt['entryPointTypeString']))
     tags.append("controller:"+str(APPD_CONTROLLER))
-    return dataset, tags
+    return dataset, tags, "appdynamics.business_transaction_average_response_time"
 
-def post_datadog(dataset, tags):
+def post_datadog(dataset, tags, metric_name):
     if (dataset[0]['metricName'] != 'METRIC DATA NOT FOUND'):
         metric = stringcase.snakecase(dataset[0]['metricPath'].replace("|","")).replace("__","_")
         for tag in tags:
@@ -74,29 +74,31 @@ def post_datadog(dataset, tags):
         metric = metric.replace("__","_")
         for result in dataset[0]['metricValues'][0]:
             if result in {'value', 'min', 'max', 'sum', 'count', 'standardDeviation'}:
-                response = api.Metric.send(metric="appdynamics."+metric+"."+result, points=dataset[0]['metricValues'][0][result], tags=tags)
+                response = api.Metric.send(metric=metric_name+"."+result, points=dataset[0]['metricValues'][0][result], tags=tags)
                 if (DEBUG): print (response)
     return 0
 
 def post_applications(applications):
     for application in applications():
-        if (application['name'] != ''):
+        if (application['name'] == 'ECommerce'):
             # Get Application Average Response Time
-            dataset, tags = get_application_average_response_time(application)
+            dataset, tags, metric_name = get_application_average_response_time(application)
             #if (DEBUG): print (dataset)
             if not (len(dataset) > 0):
                 continue
-            post_datadog(dataset, tags)
+            post_datadog(dataset, tags, metric_name)
             
             # Get Average Response Tiem for each Business Transaction
             dataset = get_business_transactions(application)
             if not (len(dataset) > 0):
                 continue
             for bt in dataset:
-                sub_dataset, tags = get_bt_average_response_time(application,bt)
+                sub_dataset, tags, metric_name = get_bt_average_response_time(application,bt)
                 if not (len(sub_dataset) > 0):
                     continue
-                post_datadog(sub_dataset, tags)
+                if (bt['internalName'] == '_APPDYNAMICS_DEFAULT_TX_'):
+                    continue
+                post_datadog(sub_dataset, tags, metric_name)
                 
     
 def main(): 
