@@ -15,16 +15,6 @@ You need to set the following environment variables in the **env.sh** file as th
     export DEBUG=true
 
 ## Up and Running
-### Using Python 3 at any host
-Install the required libraries using the following command:
-
-    sh  install.sh
-
-Then, execute the shell script using the command:
-
-    sh start.sh
-
-
 ### Using Docker as base
 Build your image using the command
 
