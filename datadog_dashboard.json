@@ -8,7 +8,7 @@
         "type": "timeseries",
         "requests": [
           {
-            "q": "top(max:appdynamics.business_transaction_average_response_time.value{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name}, 5, 'mean', 'desc')",
+            "q": "top(autosmooth(max:appdynamics.business_transaction_average_response_time.value{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name}), 5, 'mean', 'desc')",
             "display_type": "line",
             "style": {
               "palette": "dog_classic",
@@ -31,9 +31,9 @@
         "show_legend": false
       },
       "layout": {
-        "x": 0,
-        "y": 18,
-        "width": 72,
+        "x": 73,
+        "y": 0,
+        "width": 71,
         "height": 19
       }
     },
@@ -43,7 +43,7 @@
         "type": "query_table",
         "requests": [
           {
-            "q": "max:appdynamics.business_transaction_average_response_time.value{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name}",
+            "q": "max:appdynamics.business_transaction_average_response_time.value{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name, business_transaction.name}",
             "aggregator": "last",
             "alias": "Avg Response Time",
             "conditional_formats": [
@@ -65,9 +65,9 @@
             ]
           },
           {
-            "q": "sum:appdynamics.business_transaction_average_response_time.count{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name}",
+            "q": "sum:appdynamics.business_transaction_average_response_time.count{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name, business_transaction.name}",
             "aggregator": "last",
-            "limit": 5,
+            "limit": 25,
             "order": "desc",
             "alias": "Avg Load",
             "conditional_formats": [
@@ -96,8 +96,8 @@
       },
       "layout": {
         "x": 0,
-        "y": 0,
-        "width": 144,
+        "y": 30,
+        "width": 72,
         "height": 17
       }
     },
@@ -107,7 +107,7 @@
         "type": "timeseries",
         "requests": [
           {
-            "q": "top(sum:appdynamics.business_transaction_average_response_time.count{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name}, 5, 'mean', 'desc')",
+            "q": "top(autosmooth(sum:appdynamics.business_transaction_average_response_time.count{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name}), 5, 'mean', 'desc')",
             "display_type": "line",
             "style": {
               "palette": "dog_classic",
@@ -117,11 +117,7 @@
           }
         ],
         "yaxis": {
-          "label": "",
-          "scale": "linear",
-          "min": "auto",
-          "max": "auto",
-          "include_zero": true
+          "include_zero": false
         },
         "markers": [
           {
@@ -143,7 +139,7 @@
       },
       "layout": {
         "x": 73,
-        "y": 18,
+        "y": 20,
         "width": 71,
         "height": 19
       }
@@ -154,7 +150,7 @@
         "type": "timeseries",
         "requests": [
           {
-            "q": "top(max:appdynamics.business_transaction_average_response_time.value{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name,business_transaction.name}, 5, 'mean', 'desc')",
+            "q": "top(autosmooth(max:appdynamics.business_transaction_average_response_time.value{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name,business_transaction.name}), 5, 'mean', 'desc')",
             "display_type": "line",
             "style": {
               "palette": "dog_classic",
@@ -177,9 +173,9 @@
         "show_legend": false
       },
       "layout": {
-        "x": 0,
-        "y": 38,
-        "width": 72,
+        "x": 73,
+        "y": 60,
+        "width": 71,
         "height": 19
       }
     },
@@ -189,7 +185,7 @@
         "type": "timeseries",
         "requests": [
           {
-            "q": "top(sum:appdynamics.business_transaction_average_response_time.count{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name,business_transaction.name}, 5, 'mean', 'desc')",
+            "q": "top(autosmooth(sum:appdynamics.business_transaction_average_response_time.count{$application.name,$controller,$tier.name,$business_transaction,$entry_point_type} by {application.name,business_transaction.name}), 5, 'mean', 'desc')",
             "display_type": "line",
             "style": {
               "palette": "dog_classic",
@@ -199,24 +195,8 @@
           }
         ],
         "yaxis": {
-          "label": "",
-          "scale": "linear",
-          "min": "auto",
-          "max": "auto",
-          "include_zero": true
+          "scale": "sqrt"
         },
-        "markers": [
-          {
-            "value": "y = 500",
-            "display_type": "warning dashed",
-            "label": " Warning Load "
-          },
-          {
-            "value": "y = 1000",
-            "display_type": "error dashed",
-            "label": " Critical Load "
-          }
-        ],
         "title": "Top 5 Average Load by Business Transaction",
         "title_size": "16",
         "title_align": "left",
@@ -225,9 +205,74 @@
       },
       "layout": {
         "x": 73,
-        "y": 38,
+        "y": 40,
         "width": 71,
         "height": 19
+      }
+    },
+    {
+      "id": 4118813051318984,
+      "definition": {
+        "type": "change",
+        "requests": [
+          {
+            "q": "max:appdynamics.business_transaction_average_response_time.value{$application.name,$business_transaction,$controller,$tier.name,$entry_point_type} by {application.name, business_transaction.name}",
+            "change_type": "relative",
+            "compare_to": "hour_before",
+            "increase_good": false,
+            "order_by": "change",
+            "order_dir": "desc",
+            "show_present": true
+          }
+        ],
+        "title": "Slowdown in the last hour",
+        "title_size": "16",
+        "title_align": "left",
+        "time": {}
+      },
+      "layout": {
+        "x": 0,
+        "y": 48,
+        "width": 72,
+        "height": 19
+      }
+    },
+    {
+      "id": 36099935503060,
+      "definition": {
+        "type": "scatterplot",
+        "requests": {
+          "x": {
+            "q": "max:appdynamics.business_transaction_average_response_time.value{$application.name,$business_transaction,$controller,$tier.name,$entry_point_type} by {application.name, business_transaction.name}",
+            "aggregator": "avg"
+          },
+          "y": {
+            "q": "sum:appdynamics.business_transaction_average_response_time.count{$application.name,$business_transaction,$controller,$tier.name,$entry_point_type} by {application.name, business_transaction.name}",
+            "aggregator": "avg"
+          }
+        },
+        "title": "Application Distribution View",
+        "title_size": "16",
+        "title_align": "left",
+        "time": {},
+        "xaxis": {
+          "label": "Response Time",
+          "include_zero": false
+        },
+        "yaxis": {
+          "label": "Load",
+          "scale": "sqrt",
+          "include_zero": false
+        },
+        "color_by_groups": [
+          "business_transaction.name"
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 72,
+        "height": 29
       }
     }
   ],
